@@ -1,0 +1,5 @@
+#pragma once
+
+#include <QString>
+
+#define TEST_DATA_DIR QString::fromUtf8(u8"${TEST_DATA_DIR}")
