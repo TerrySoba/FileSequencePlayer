@@ -20,6 +20,7 @@ public:
 public slots:
     void displayImage(QImage pixmap);
     void setFrameSlider(int frame, int frameCount);
+    void setProgress(int percent);
 
 signals:
     void selectFrame(int frame);

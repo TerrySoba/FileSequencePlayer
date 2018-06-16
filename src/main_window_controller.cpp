@@ -40,14 +40,12 @@ public:
 
     virtual void run() override
     {
-        std::cout << "Thread!!!" << std::endl;
         while (m_begin != m_end)
         {
-            // auto pix = QImage(*m_begin);
             m_results.push_back(QImage(*m_begin));
+            m_semaphore.release(1);
             ++m_begin;
         }
-        m_semaphore.release(1);
     }
 
 private:
@@ -69,49 +67,39 @@ void MainWindowController::openFile(QString filename)
 
     m_images.clear();
 
-
-
     auto threadCount = QThreadPool::globalInstance()->maxThreadCount();
 
-    std::cout << "Using thread: " << threadCount << std::endl;
+    std::cout << "Using threads: " << threadCount << std::endl;
 
     std::vector<std::vector<QImage>> threadResults(threadCount);
-    QSemaphore semaphore;
+    QSemaphore semaphore(0);
 
     int elements = std::max(1, static_cast<int>(files.size()) / threadCount);
     auto filesIter = files.begin();
 
     for (int i = 0; i < threadCount; ++i)
     {
-        auto dist = std::min(elements, static_cast<int>(std::distance(filesIter, files.end())));
-        if (files.end() != filesIter)
-            std::cout << "dist: " << dist << " elem:" << filesIter->toStdString() << std::endl;
-        else
-            std::cout << "dist: " << dist << " elem: empty"<< std::endl;
-
-        auto nextfilesIter = filesIter + std::min(elements, dist);
-
+        auto dist = std::min(elements + 1, static_cast<int>(std::distance(filesIter, files.end())));
+        auto nextfilesIter = filesIter + dist;
         QThreadPool::globalInstance()->start(
                     new FileLoaderThread(
                         semaphore,
                         threadResults[i],
                         filesIter,
                         nextfilesIter));
-        std::cout << "Started thread:" << i << std::endl;
 
         filesIter = nextfilesIter;
-
     }
 
-    std::cout << "Waiting for threads to finish" << std::endl;
+    int framesDone = 0;
 
-    // wait for all threads to finish
-    semaphore.acquire(threadCount);
-
-    std::cout << "Wait finished" << std::endl;
-
-
-    m_images.clear();
+    // wait for all images to have been processed
+    for (int i = 0; i < files.size(); ++i)
+    {
+        semaphore.acquire(1);
+        ++framesDone;
+        emit progress(((double)framesDone / files.size()) * 100);
+    }
 
     for (auto& result : threadResults)
     {

@@ -13,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->stackedWidget->setCurrentIndex(1);
+
     ui->frameSlider->setMinimum(0);
     ui->frameSlider->setMaximum(0);
 
@@ -31,12 +33,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionOpen, &QAction::triggered, this, [this]()
     {
         QString lastDir = this->m_settings.value("files/lastOpen", "").toString();
-        QString filename = QFileDialog::getOpenFileName(this, tr("Select Image File"), lastDir, tr("Images (*.png *.jpg)"));
+        QString filename = QFileDialog::getOpenFileName(this, tr("Select Image File"), lastDir, tr("Images (*.png *.jpg *.bmp)"));
         this->m_settings.setValue("files/lastOpen", filename);
+        ui->stackedWidget->setCurrentIndex(1); // show progress bar
         emit this->openFile(filename);
     });
 
     connect(ui->frameSlider, &QSlider::valueChanged, this, &MainWindow::selectFrame);
+
 
     m_pixmapItem = m_scene.addPixmap(QPixmap());
 
@@ -52,10 +56,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::displayImage(QImage image)
 {
-    // ui->videoLabel->setPixmap(pixmap);
-
     m_pixmapItem->setPixmap(QPixmap::fromImage(image));
-
 }
 
 void MainWindow::setFrameSlider(int frame, int frameCount)
@@ -63,4 +64,10 @@ void MainWindow::setFrameSlider(int frame, int frameCount)
     ui->frameSlider->setMinimum(0);
     ui->frameSlider->setMaximum(frameCount - 1);
     ui->frameSlider->setValue(frame);
+    ui->stackedWidget->setCurrentIndex(0);
+}
+
+void MainWindow::setProgress(int percent)
+{
+    ui->progressBar->setValue(percent);
 }

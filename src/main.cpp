@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
     QObject::connect(&win, &MainWindow::selectFrame, &controller, &MainWindowController::selectFrame);
     QObject::connect(&controller, &MainWindowController::displayImage, &win, &MainWindow::displayImage);
     QObject::connect(&controller, &MainWindowController::imagesLoaded, &win, &MainWindow::setFrameSlider);
+    QObject::connect(&controller, &MainWindowController::progress, &win, &MainWindow::setProgress);
 
     win.show();
 

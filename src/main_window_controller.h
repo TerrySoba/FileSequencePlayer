@@ -14,7 +14,6 @@ class MainWindowController : public QObject
 public:
     MainWindowController(std::shared_ptr<FileSequenceFinder> fileSequenceFinder);
 
-
 public slots:
     void selectFrame(int frame);
     void openFile(QString filename);
@@ -22,6 +21,7 @@ public slots:
 signals:
     void displayImage(QImage image);
     void imagesLoaded(int currentFrame, int frameCount);
+    void progress(int percent);
 
 private:
     std::shared_ptr<FileSequenceFinder> m_fileSequenceFinder;
