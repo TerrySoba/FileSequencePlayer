@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QSettings>
+#include <QGraphicsScene>
+
 namespace Ui {
 class MainWindow;
 }
@@ -16,7 +18,7 @@ public:
     virtual ~MainWindow();
 
 public slots:
-    void displayImage(QPixmap pixmap);
+    void displayImage(QImage pixmap);
     void setFrameSlider(int frame, int frameCount);
 
 signals:
@@ -27,7 +29,8 @@ private:
     Ui::MainWindow *ui;
 
     QSettings m_settings;
-
+    QGraphicsScene m_scene;
+    QGraphicsPixmapItem* m_pixmapItem;
 };
 
 #endif // MAINWINDOW_H

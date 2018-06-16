@@ -20,12 +20,12 @@ public slots:
     void openFile(QString filename);
 
 signals:
-    void displayImage(QPixmap image);
+    void displayImage(QImage image);
     void imagesLoaded(int currentFrame, int frameCount);
 
 private:
     std::shared_ptr<FileSequenceFinder> m_fileSequenceFinder;
-    std::vector<QPixmap> m_images;
+    std::vector<QImage> m_images;
     int m_currentFrame = 0;
 };
 
